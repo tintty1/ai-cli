@@ -19,7 +19,7 @@ Use when you need to:
 
 ## Prerequisites
 
-Requires `AI_GATEWAY_API_KEY` or a provider-specific key (e.g. `OPENAI_API_KEY`) in the environment.
+Requires `AI_GATEWAY_API_KEY` or a provider-specific key (e.g. `OPENAI_API_KEY`) in the environment. To route models through [OpenRouter](https://openrouter.ai) instead, set `OPENROUTER_API_KEY` and prefix model IDs with `openrouter/` (see [OpenRouter](#openrouter)).
 
 ## Commands
 
@@ -41,6 +41,30 @@ ai models --type audio                   # list speech and transcription models
 -q, --quiet            Suppress progress output
 --json                 Output structured metadata as JSON (paths, timing, success/failure)
 ```
+
+## OpenRouter
+
+Prefix any model ID with `openrouter/` to route it through [OpenRouter](https://openrouter.ai) instead of the AI Gateway. Requires `OPENROUTER_API_KEY` in the environment. The full OpenRouter model slug follows the prefix.
+
+Supported for **`ai text`** and **`ai image`** only. `ai video`, `ai audio speak`, and `ai audio transcribe` reject `openrouter/` models with a clear error (OpenRouter has no such endpoints).
+
+```bash
+# Text
+ai text -m openrouter/anthropic/claude-sonnet-4.5 "explain this code"
+
+# Image (uses OpenRouter's dedicated Image API; --size / --aspect-ratio / -i references supported)
+ai image -m openrouter/google/gemini-2.5-flash-image "a red panda astronaut" -o out.png
+ai image -m openrouter/bytedance-seed/seedream-4.5 "a city skyline" --aspect-ratio 16:9 -o city.png
+
+# Mix providers in one multi-model call
+ai text -m openai/gpt-5.5,openrouter/anthropic/claude-sonnet-4.5 "compare these"
+
+# List OpenRouter's catalog (only appears when OPENROUTER_API_KEY is set)
+ai models --creator openrouter --type text
+ai models --creator openrouter --type image
+```
+
+When listing, OpenRouter models appear under the `openrouter` creator; prepend `openrouter/` to the shown slug to invoke one.
 
 ## Piping Patterns
 

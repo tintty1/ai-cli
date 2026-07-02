@@ -8,6 +8,10 @@ import {
 } from "../lib/image-references.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
+import {
+  generateOpenRouterImage,
+  isOpenRouterModel,
+} from "../lib/openrouter.js";
 import { parsePositiveInt, parseSize, parseAspectRatio } from "../lib/parse.js";
 import { responseIdFromHeaders } from "../lib/response-id.js";
 import { readStdin } from "../lib/stdin.js";
@@ -128,6 +132,22 @@ export function registerImageCommand(program: Command) {
         jobs,
         async (modelId) => {
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
+
+          if (isOpenRouterModel(modelId)) {
+            const promptText =
+              typeof imagePrompt === "string"
+                ? imagePrompt
+                : (imagePrompt.text ?? "Generate an image");
+            const references =
+              typeof imagePrompt === "string" ? undefined : imagePrompt.images;
+            return generateOpenRouterImage(modelId, {
+              prompt: promptText,
+              size,
+              aspectRatio,
+              references,
+              signal: abort,
+            });
+          }
 
           if (gatewayModels.languageImageModelIds.has(modelId)) {
             const messageContent: Array<

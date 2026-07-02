@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@ai-sdk/gateway": "4.0.3",
+    "@ai-sdk/openai-compatible": "^3.0.3",
     "ai": "7.0.3",
     "commander": "^14.0.3"
   },

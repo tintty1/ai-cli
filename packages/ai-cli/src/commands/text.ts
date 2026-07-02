@@ -15,6 +15,7 @@ import {
 } from "../lib/image-references.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
+import { isOpenRouterModel, openRouterTextModel } from "../lib/openrouter.js";
 import type { OutputFormat } from "../lib/output.js";
 import { parsePositiveInt, parseTemperature } from "../lib/parse.js";
 import { readStdin, stdinAsText } from "../lib/stdin.js";
@@ -124,7 +125,9 @@ export function registerTextCommand(program: Command) {
               "http-referer": "https://github.com/vercel-labs/ai-cli",
               "x-title": "ai-cli",
             },
-            model: gateway(modelId),
+            model: isOpenRouterModel(modelId)
+              ? openRouterTextModel(modelId)
+              : gateway(modelId),
             prompt: textPrompt,
             system: opts.system,
             maxOutputTokens: maxTokens,

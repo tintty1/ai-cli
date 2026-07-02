@@ -5,6 +5,7 @@ import {
   type Modality,
   type ModelEntry,
 } from "../lib/models.js";
+import { fetchOpenRouterModels } from "../lib/openrouter.js";
 
 type ModelFilter = Modality | "audio";
 
@@ -53,10 +54,20 @@ export function registerModelsCommand(program: Command) {
         }
         const filterCreator = opts.creator?.toLowerCase();
 
-        const gatewayModels = await fetchGatewayModels();
+        const [gatewayModels, openRouterModels] = await Promise.all([
+          fetchGatewayModels(),
+          fetchOpenRouterModels(),
+        ]);
+        const textModels = [...gatewayModels.text, ...openRouterModels.text];
+        const imageModels = [...gatewayModels.image, ...openRouterModels.image];
+        const allModels = [
+          ...gatewayModels.all,
+          ...openRouterModels.text,
+          ...openRouterModels.image,
+        ];
 
         if (opts.json) {
-          let entries = gatewayModels.all;
+          let entries = allModels;
           if (filterType) {
             entries = entries.filter((m) =>
               filterType === "audio"
@@ -84,9 +95,9 @@ export function registerModelsCommand(program: Command) {
 
         const sections: { title: string; entries: ModelEntry[] }[] = [];
         if (!filterType || filterType === "text")
-          sections.push({ title: "Text", entries: gatewayModels.text });
+          sections.push({ title: "Text", entries: textModels });
         if (!filterType || filterType === "image")
-          sections.push({ title: "Image", entries: gatewayModels.image });
+          sections.push({ title: "Image", entries: imageModels });
         if (!filterType || filterType === "video")
           sections.push({ title: "Video", entries: gatewayModels.video });
         if (!filterType || filterType === "audio" || filterType === "speech")

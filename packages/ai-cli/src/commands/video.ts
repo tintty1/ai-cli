@@ -8,6 +8,7 @@ import {
 } from "../lib/image-references.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
+import { isOpenRouterModel } from "../lib/openrouter.js";
 import {
   parsePositiveInt,
   parseAspectRatio,
@@ -117,6 +118,11 @@ export function registerVideoCommand(program: Command) {
       const { total, failed } = await runJobs(
         jobs,
         async (modelId) => {
+          if (isOpenRouterModel(modelId)) {
+            throw new Error(
+              "OpenRouter models support only `ai text` and `ai image`, not video"
+            );
+          }
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
           const result = await generateVideo({
             headers: {

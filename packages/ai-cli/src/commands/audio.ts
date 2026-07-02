@@ -10,6 +10,7 @@ import type { Command } from "commander";
 import { previewAudioOutputs } from "../lib/audio-preview.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
+import { isOpenRouterModel } from "../lib/openrouter.js";
 import type { OutputFormat } from "../lib/output.js";
 import { parseNonNegativeFloat, parsePositiveInt } from "../lib/parse.js";
 import { responseIdFromHeaders } from "../lib/response-id.js";
@@ -109,6 +110,11 @@ export function registerAudioCommand(program: Command) {
       const { total, failed } = await runJobs(
         jobs,
         async (modelId) => {
+          if (isOpenRouterModel(modelId)) {
+            throw new Error(
+              "OpenRouter models support only `ai text` and `ai image`, not speech"
+            );
+          }
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
           const result = await generateSpeech({
             headers: gatewayHeaders(),
@@ -203,6 +209,11 @@ export function registerAudioCommand(program: Command) {
       const { total, failed } = await runJobs(
         jobs,
         async (modelId) => {
+          if (isOpenRouterModel(modelId)) {
+            throw new Error(
+              "OpenRouter models support only `ai text` and `ai image`, not transcription"
+            );
+          }
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
           const result = await transcribe({
             headers: gatewayHeaders(),
