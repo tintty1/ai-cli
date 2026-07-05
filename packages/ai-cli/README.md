@@ -4,9 +4,15 @@ A tiny, agent-native CLI for generating images, video, audio and text with dead-
 
 ## Install
 
+Build from source and install the `ai` launcher into `~/.local/bin` (requires [Bun](https://bun.sh) to build and Node.js to run):
+
 ```bash
-npm install -g ai-cli
+git clone https://github.com/tintty1/ai-cli.git
+cd ai-cli
+./install.sh
 ```
+
+Install to a different prefix with `PREFIX=/usr/local ./install.sh`, or skip the build and reuse an existing `dist/` with `./install.sh --no-build`. Make sure `~/.local/bin` (or your chosen `$PREFIX/bin`) is on your `PATH`.
 
 Requires Node.js 22+ and an [AI Gateway](https://vercel.com/docs/ai-gateway) API key or a provider-specific key (e.g. `OPENAI_API_KEY`). You can also route models through [OpenRouter](https://openrouter.ai) with `OPENROUTER_API_KEY` — see [OpenRouter](#openrouter) — or through [LLMGate](https://llmgate.app) with `LLMGATE_API_KEY` — see [LLMGate](#llmgate).
 
