@@ -7,6 +7,7 @@ import {
   type ImageReference,
 } from "../lib/image-references.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
+import { generateLlmgateImage, isLlmgateModel } from "../lib/llmgate.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
 import {
   generateOpenRouterImage,
@@ -144,6 +145,21 @@ export function registerImageCommand(program: Command) {
               prompt: promptText,
               size,
               aspectRatio,
+              references,
+              signal: abort,
+            });
+          }
+
+          if (isLlmgateModel(modelId)) {
+            const promptText =
+              typeof imagePrompt === "string"
+                ? imagePrompt
+                : (imagePrompt.text ?? "Generate an image");
+            const references =
+              typeof imagePrompt === "string" ? undefined : imagePrompt.images;
+            return generateLlmgateImage(modelId, {
+              prompt: promptText,
+              size,
               references,
               signal: abort,
             });

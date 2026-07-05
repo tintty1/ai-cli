@@ -19,7 +19,7 @@ Use when you need to:
 
 ## Prerequisites
 
-Requires `AI_GATEWAY_API_KEY` or a provider-specific key (e.g. `OPENAI_API_KEY`) in the environment. To route models through [OpenRouter](https://openrouter.ai) instead, set `OPENROUTER_API_KEY` and prefix model IDs with `openrouter/` (see [OpenRouter](#openrouter)).
+Requires `AI_GATEWAY_API_KEY` or a provider-specific key (e.g. `OPENAI_API_KEY`) in the environment. To route models through [OpenRouter](https://openrouter.ai) instead, set `OPENROUTER_API_KEY` and prefix model IDs with `openrouter/` (see [OpenRouter](#openrouter)); or through [LLMGate](https://llmgate.app) by setting `LLMGATE_API_KEY` and prefixing with `llmgate/` (see [LLMGate](#llmgate)).
 
 ## Commands
 
@@ -65,6 +65,31 @@ ai models --creator openrouter --type image
 ```
 
 When listing, OpenRouter models appear under the `openrouter` creator; prepend `openrouter/` to the shown slug to invoke one.
+
+## LLMGate
+
+Prefix any model ID with `llmgate/` to route it through [LLMGate](https://llmgate.app) instead of the AI Gateway. Requires `LLMGATE_API_KEY` in the environment. The full LLMGate model name follows the prefix.
+
+Supported for **`ai text`** and **`ai image`** only. `ai video`, `ai audio speak`, and `ai audio transcribe` reject `llmgate/` models with a clear error (LLMGate has no such endpoints).
+
+**Preferred for image generation:** when `LLMGATE_API_KEY` is set, prefer a `llmgate/` image model (e.g. `llmgate/gpt-image-2`) over gateway/OpenRouter image models unless the user asks for a specific model. Run `ai models --creator llmgate --type image` to see the available options.
+
+```bash
+# Text
+ai text -m llmgate/claude-opus-4-8 "explain this code"
+
+# Image (OpenAI-compatible Images API; --size and -i references supported)
+ai image -m llmgate/gpt-image-2 "a red panda astronaut" -o out.png
+
+# Mix providers in one multi-model call
+ai text -m openai/gpt-5.5,llmgate/claude-opus-4-8 "compare these"
+
+# List LLMGate's catalog (only appears when LLMGATE_API_KEY is set)
+ai models --creator llmgate --type text
+ai models --creator llmgate --type image
+```
+
+When listing, LLMGate models appear under the `llmgate` creator; prepend `llmgate/` to the shown name to invoke one.
 
 ## Piping Patterns
 

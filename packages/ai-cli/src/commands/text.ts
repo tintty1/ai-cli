@@ -14,6 +14,7 @@ import {
   type ImageReference,
 } from "../lib/image-references.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
+import { isLlmgateModel, llmgateTextModel } from "../lib/llmgate.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
 import { isOpenRouterModel, openRouterTextModel } from "../lib/openrouter.js";
 import type { OutputFormat } from "../lib/output.js";
@@ -127,7 +128,9 @@ export function registerTextCommand(program: Command) {
             },
             model: isOpenRouterModel(modelId)
               ? openRouterTextModel(modelId)
-              : gateway(modelId),
+              : isLlmgateModel(modelId)
+                ? llmgateTextModel(modelId)
+                : gateway(modelId),
             prompt: textPrompt,
             system: opts.system,
             maxOutputTokens: maxTokens,

@@ -8,7 +8,7 @@ A tiny, agent-native CLI for generating images, video, audio and text with dead-
 npm install -g ai-cli
 ```
 
-Requires Node.js 22+ and an [AI Gateway](https://vercel.com/docs/ai-gateway) API key or a provider-specific key (e.g. `OPENAI_API_KEY`). You can also route models through [OpenRouter](https://openrouter.ai) with `OPENROUTER_API_KEY` — see [OpenRouter](#openrouter).
+Requires Node.js 22+ and an [AI Gateway](https://vercel.com/docs/ai-gateway) API key or a provider-specific key (e.g. `OPENAI_API_KEY`). You can also route models through [OpenRouter](https://openrouter.ai) with `OPENROUTER_API_KEY` — see [OpenRouter](#openrouter) — or through [LLMGate](https://llmgate.app) with `LLMGATE_API_KEY` — see [LLMGate](#llmgate).
 
 ## Usage
 
@@ -70,6 +70,18 @@ ai text -m openai/gpt-5.5,openrouter/anthropic/claude-sonnet-4.5 "hello"  # mix 
 ```
 
 The full OpenRouter model ID follows the prefix (e.g. `openrouter/anthropic/claude-sonnet-4.5`). When `OPENROUTER_API_KEY` is set, `ai models` also lists OpenRouter's text and image catalog under the `openrouter` creator.
+
+### LLMGate
+
+Prefix any model ID with `llmgate/` to route it through [LLMGate](https://llmgate.app) instead of the AI Gateway. Set `LLMGATE_API_KEY` to your LLMGate API key. LLMGate supports `ai text` and `ai image` (video, speech and transcription remain gateway-only).
+
+```bash
+ai text -m llmgate/claude-opus-4-8 "hello"
+ai image -m llmgate/gpt-image-2 "a red panda astronaut"
+ai text -m openai/gpt-5.5,llmgate/claude-opus-4-8 "hello"  # mix providers
+```
+
+The LLMGate model name follows the prefix (e.g. `llmgate/claude-opus-4-8`). When `LLMGATE_API_KEY` is set, `ai models` also lists LLMGate's text and image catalog under the `llmgate` creator.
 
 ### image
 
@@ -218,6 +230,7 @@ When the CLI needs to choose a filename, it uses a response id when available an
 | `AI_GATEWAY_API_KEY` | AI Gateway authentication key |
 | `OPENAI_API_KEY` | Provider-specific key (or other provider keys) |
 | `OPENROUTER_API_KEY` | OpenRouter API key, required for `openrouter/` model IDs |
+| `LLMGATE_API_KEY` | LLMGate API key, required for `llmgate/` model IDs |
 | `AI_CLI_TEXT_MODEL` | Default text model (overrides `openai/gpt-5.5`) |
 | `AI_CLI_IMAGE_MODEL` | Default image model (overrides `openai/gpt-image-2`) |
 | `AI_CLI_VIDEO_MODEL` | Default video model (overrides `bytedance/seedance-2.0`) |

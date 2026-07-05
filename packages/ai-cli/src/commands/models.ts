@@ -1,5 +1,6 @@
 import type { Command } from "commander";
 
+import { fetchLlmgateModels } from "../lib/llmgate.js";
 import {
   fetchGatewayModels,
   type Modality,
@@ -54,16 +55,28 @@ export function registerModelsCommand(program: Command) {
         }
         const filterCreator = opts.creator?.toLowerCase();
 
-        const [gatewayModels, openRouterModels] = await Promise.all([
-          fetchGatewayModels(),
-          fetchOpenRouterModels(),
-        ]);
-        const textModels = [...gatewayModels.text, ...openRouterModels.text];
-        const imageModels = [...gatewayModels.image, ...openRouterModels.image];
+        const [gatewayModels, openRouterModels, llmgateModels] =
+          await Promise.all([
+            fetchGatewayModels(),
+            fetchOpenRouterModels(),
+            fetchLlmgateModels(),
+          ]);
+        const textModels = [
+          ...gatewayModels.text,
+          ...openRouterModels.text,
+          ...llmgateModels.text,
+        ];
+        const imageModels = [
+          ...gatewayModels.image,
+          ...openRouterModels.image,
+          ...llmgateModels.image,
+        ];
         const allModels = [
           ...gatewayModels.all,
           ...openRouterModels.text,
           ...openRouterModels.image,
+          ...llmgateModels.text,
+          ...llmgateModels.image,
         ];
 
         if (opts.json) {

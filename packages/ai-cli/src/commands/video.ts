@@ -7,6 +7,7 @@ import {
   type ImageReference,
 } from "../lib/image-references.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
+import { isLlmgateModel } from "../lib/llmgate.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
 import { isOpenRouterModel } from "../lib/openrouter.js";
 import {
@@ -121,6 +122,11 @@ export function registerVideoCommand(program: Command) {
           if (isOpenRouterModel(modelId)) {
             throw new Error(
               "OpenRouter models support only `ai text` and `ai image`, not video"
+            );
+          }
+          if (isLlmgateModel(modelId)) {
+            throw new Error(
+              "LLMGate models support only `ai text` and `ai image`, not video"
             );
           }
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
