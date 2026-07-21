@@ -14,7 +14,7 @@ cd ai-cli
 
 Install to a different prefix with `PREFIX=/usr/local ./install.sh`, or skip the build and reuse an existing `dist/` with `./install.sh --no-build`. Make sure `~/.local/bin` (or your chosen `$PREFIX/bin`) is on your `PATH`.
 
-Requires Node.js 22+ and an [AI Gateway](https://vercel.com/docs/ai-gateway) API key or a provider-specific key (e.g. `OPENAI_API_KEY`). You can also route models through [OpenRouter](https://openrouter.ai) with `OPENROUTER_API_KEY` — see [OpenRouter](#openrouter) — or through [LLMGate](https://llmgate.app) with `LLMGATE_API_KEY` — see [LLMGate](#llmgate).
+Requires Node.js 22+ and an [AI Gateway](https://vercel.com/docs/ai-gateway) API key or a provider-specific key (e.g. `OPENAI_API_KEY`). You can also route models through [OpenRouter](https://openrouter.ai) with `OPENROUTER_API_KEY` — see [OpenRouter](#openrouter) — through [LLMGate](https://llmgate.app) with `LLMGATE_API_KEY` — see [LLMGate](#llmgate) — or through any OpenAI-compatible endpoint with `OPENAI_API_KEY`/`OPENAI_BASE_URL` — see [OpenAI-compatible](#openai-compatible).
 
 ## Usage
 
@@ -88,6 +88,18 @@ ai text -m openai/gpt-5.5,llmgate/claude-opus-4-8 "hello"  # mix providers
 ```
 
 The LLMGate model name follows the prefix (e.g. `llmgate/claude-opus-4-8`). When `LLMGATE_API_KEY` is set, `ai models` also lists LLMGate's text and image catalog under the `llmgate` creator.
+
+### OpenAI-compatible
+
+Prefix any model ID with `openai-compat/` to route it through any OpenAI-compatible endpoint (OpenAI itself, or a self-hosted server such as vLLM, LM Studio or Ollama). Set `OPENAI_API_KEY` to your key and `OPENAI_BASE_URL` to the endpoint's base URL (defaults to `https://api.openai.com/v1`). OpenAI-compatible models support `ai text` and `ai image` (video, speech and transcription remain gateway-only).
+
+```bash
+OPENAI_BASE_URL=http://localhost:1234/v1 ai text -m openai-compat/llama-3.3-70b "hello"
+ai image -m openai-compat/gpt-image-2 "a red panda astronaut"
+ai text -m openai/gpt-5.5,openai-compat/llama-3.3-70b "hello"  # mix providers
+```
+
+The model name follows the prefix (e.g. `openai-compat/gpt-5.5`). Text uses the endpoint's `/chat/completions`; images use `/images/generations` (or `/images/edits` when reference images are supplied). When `OPENAI_API_KEY` is set, `ai models` also lists the endpoint's `/models` catalog under the `openai-compat` creator (all listed as text, since the endpoint reports no modality).
 
 ### image
 
@@ -234,7 +246,8 @@ When the CLI needs to choose a filename, it uses a response id when available an
 | Variable | Description |
 |---|---|
 | `AI_GATEWAY_API_KEY` | AI Gateway authentication key |
-| `OPENAI_API_KEY` | Provider-specific key (or other provider keys) |
+| `OPENAI_API_KEY` | Provider-specific key (or other provider keys); also required for `openai-compat/` model IDs |
+| `OPENAI_BASE_URL` | OpenAI-compatible endpoint base URL for `openai-compat/` model IDs (default: `https://api.openai.com/v1`) |
 | `OPENROUTER_API_KEY` | OpenRouter API key, required for `openrouter/` model IDs |
 | `LLMGATE_API_KEY` | LLMGate API key, required for `llmgate/` model IDs |
 | `AI_CLI_TEXT_MODEL` | Default text model (overrides `openai/gpt-5.5`) |

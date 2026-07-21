@@ -6,6 +6,7 @@ import {
   type Modality,
   type ModelEntry,
 } from "../lib/models.js";
+import { fetchOpenAICompatModels } from "../lib/openai-compat.js";
 import { fetchOpenRouterModels } from "../lib/openrouter.js";
 
 type ModelFilter = Modality | "audio";
@@ -55,21 +56,28 @@ export function registerModelsCommand(program: Command) {
         }
         const filterCreator = opts.creator?.toLowerCase();
 
-        const [gatewayModels, openRouterModels, llmgateModels] =
-          await Promise.all([
-            fetchGatewayModels(),
-            fetchOpenRouterModels(),
-            fetchLlmgateModels(),
-          ]);
+        const [
+          gatewayModels,
+          openRouterModels,
+          llmgateModels,
+          openAICompatModels,
+        ] = await Promise.all([
+          fetchGatewayModels(),
+          fetchOpenRouterModels(),
+          fetchLlmgateModels(),
+          fetchOpenAICompatModels(),
+        ]);
         const textModels = [
           ...gatewayModels.text,
           ...openRouterModels.text,
           ...llmgateModels.text,
+          ...openAICompatModels.text,
         ];
         const imageModels = [
           ...gatewayModels.image,
           ...openRouterModels.image,
           ...llmgateModels.image,
+          ...openAICompatModels.image,
         ];
         const allModels = [
           ...gatewayModels.all,
@@ -77,6 +85,8 @@ export function registerModelsCommand(program: Command) {
           ...openRouterModels.image,
           ...llmgateModels.text,
           ...llmgateModels.image,
+          ...openAICompatModels.text,
+          ...openAICompatModels.image,
         ];
 
         if (opts.json) {
