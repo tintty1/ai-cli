@@ -19,7 +19,7 @@ Use when you need to:
 
 ## Prerequisites
 
-Requires `AI_GATEWAY_API_KEY` or a provider-specific key (e.g. `OPENAI_API_KEY`) in the environment. To route models through [OpenRouter](https://openrouter.ai) instead, set `OPENROUTER_API_KEY` and prefix model IDs with `openrouter/` (see [OpenRouter](#openrouter)); or through [LLMGate](https://llmgate.app) by setting `LLMGATE_API_KEY` and prefixing with `llmgate/` (see [LLMGate](#llmgate)).
+Requires `AI_GATEWAY_API_KEY` or a provider-specific key (e.g. `OPENAI_API_KEY`) in the environment. To route models through [OpenRouter](https://openrouter.ai) instead, set `OPENROUTER_API_KEY` and prefix model IDs with `openrouter/` (see [OpenRouter](#openrouter)); through [LLMGate](https://llmgate.app) by setting `LLMGATE_API_KEY` and prefixing with `llmgate/` (see [LLMGate](#llmgate)); or through any OpenAI-compatible endpoint by setting `OPENAI_API_KEY`/`OPENAI_BASE_URL` and prefixing with `openai-compat/` (see [OpenAI-compatible](#openai-compatible)).
 
 ## Commands
 
@@ -90,6 +90,28 @@ ai models --creator llmgate --type image
 ```
 
 When listing, LLMGate models appear under the `llmgate` creator; prepend `llmgate/` to the shown name to invoke one.
+
+## OpenAI-compatible
+
+Prefix any model ID with `openai-compat/` to route it through any OpenAI-compatible endpoint (OpenAI itself, vLLM, LM Studio, Ollama, Together, Groq, etc.). Requires `OPENAI_API_KEY` in the environment; set `OPENAI_BASE_URL` to the endpoint (defaults to `https://api.openai.com/v1`). The full model name follows the prefix.
+
+Supported for **`ai text`** and **`ai image`** only. `ai video`, `ai audio speak`, and `ai audio transcribe` reject `openai-compat/` models with a clear error.
+
+```bash
+# Text (uses the endpoint's /chat/completions)
+OPENAI_BASE_URL=http://localhost:1234/v1 ai text -m openai-compat/llama-3.3-70b "explain this code"
+
+# Image (OpenAI-compatible Images API; --size and -i references supported)
+ai image -m openai-compat/gpt-image-2 "a red panda astronaut" -o out.png
+
+# Mix providers in one multi-model call
+ai text -m openai/gpt-5.5,openai-compat/llama-3.3-70b "compare these"
+
+# List the endpoint's catalog (only appears when OPENAI_API_KEY is set)
+ai models --creator openai-compat --type text
+```
+
+When listing, models appear under the `openai-compat` creator; prepend `openai-compat/` to the shown name to invoke one. The `/models` endpoint carries no modality, so every entry is listed under text.
 
 ## Piping Patterns
 

@@ -11,6 +11,7 @@ import { previewAudioOutputs } from "../lib/audio-preview.js";
 import { buildJobs, runJobs } from "../lib/jobs.js";
 import { isLlmgateModel } from "../lib/llmgate.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
+import { isOpenAICompatModel } from "../lib/openai-compat.js";
 import { isOpenRouterModel } from "../lib/openrouter.js";
 import type { OutputFormat } from "../lib/output.js";
 import { parseNonNegativeFloat, parsePositiveInt } from "../lib/parse.js";
@@ -121,6 +122,11 @@ export function registerAudioCommand(program: Command) {
               "LLMGate models support only `ai text` and `ai image`, not speech"
             );
           }
+          if (isOpenAICompatModel(modelId)) {
+            throw new Error(
+              "OpenAI-compatible models support only `ai text` and `ai image`, not speech"
+            );
+          }
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
           const result = await generateSpeech({
             headers: gatewayHeaders(),
@@ -223,6 +229,11 @@ export function registerAudioCommand(program: Command) {
           if (isLlmgateModel(modelId)) {
             throw new Error(
               "LLMGate models support only `ai text` and `ai image`, not transcription"
+            );
+          }
+          if (isOpenAICompatModel(modelId)) {
+            throw new Error(
+              "OpenAI-compatible models support only `ai text` and `ai image`, not transcription"
             );
           }
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);

@@ -16,6 +16,10 @@ import {
 import { buildJobs, runJobs } from "../lib/jobs.js";
 import { isLlmgateModel, llmgateTextModel } from "../lib/llmgate.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
+import {
+  isOpenAICompatModel,
+  openAICompatTextModel,
+} from "../lib/openai-compat.js";
 import { isOpenRouterModel, openRouterTextModel } from "../lib/openrouter.js";
 import type { OutputFormat } from "../lib/output.js";
 import { parsePositiveInt, parseTemperature } from "../lib/parse.js";
@@ -130,7 +134,9 @@ export function registerTextCommand(program: Command) {
               ? openRouterTextModel(modelId)
               : isLlmgateModel(modelId)
                 ? llmgateTextModel(modelId)
-                : gateway(modelId),
+                : isOpenAICompatModel(modelId)
+                  ? openAICompatTextModel(modelId)
+                  : gateway(modelId),
             prompt: textPrompt,
             system: opts.system,
             maxOutputTokens: maxTokens,

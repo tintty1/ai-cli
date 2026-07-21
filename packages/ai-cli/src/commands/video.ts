@@ -9,6 +9,7 @@ import {
 import { buildJobs, runJobs } from "../lib/jobs.js";
 import { isLlmgateModel } from "../lib/llmgate.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
+import { isOpenAICompatModel } from "../lib/openai-compat.js";
 import { isOpenRouterModel } from "../lib/openrouter.js";
 import {
   parsePositiveInt,
@@ -127,6 +128,11 @@ export function registerVideoCommand(program: Command) {
           if (isLlmgateModel(modelId)) {
             throw new Error(
               "LLMGate models support only `ai text` and `ai image`, not video"
+            );
+          }
+          if (isOpenAICompatModel(modelId)) {
+            throw new Error(
+              "OpenAI-compatible models support only `ai text` and `ai image`, not video"
             );
           }
           const abort = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);

@@ -10,6 +10,10 @@ import { buildJobs, runJobs } from "../lib/jobs.js";
 import { generateLlmgateImage, isLlmgateModel } from "../lib/llmgate.js";
 import { fetchGatewayModels, resolveModels } from "../lib/models.js";
 import {
+  generateOpenAICompatImage,
+  isOpenAICompatModel,
+} from "../lib/openai-compat.js";
+import {
   generateOpenRouterImage,
   isOpenRouterModel,
 } from "../lib/openrouter.js";
@@ -158,6 +162,21 @@ export function registerImageCommand(program: Command) {
             const references =
               typeof imagePrompt === "string" ? undefined : imagePrompt.images;
             return generateLlmgateImage(modelId, {
+              prompt: promptText,
+              size,
+              references,
+              signal: abort,
+            });
+          }
+
+          if (isOpenAICompatModel(modelId)) {
+            const promptText =
+              typeof imagePrompt === "string"
+                ? imagePrompt
+                : (imagePrompt.text ?? "Generate an image");
+            const references =
+              typeof imagePrompt === "string" ? undefined : imagePrompt.images;
+            return generateOpenAICompatImage(modelId, {
               prompt: promptText,
               size,
               references,
